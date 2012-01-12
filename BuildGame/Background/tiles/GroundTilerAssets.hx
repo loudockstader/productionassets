@@ -4,6 +4,10 @@ import flash.display.BitmapData;
 
 import math.Rect;
 
+/**
+ *	Generated from GroundTilerAssets.hx.erb in the ProductionAssets repo
+ */
+
 
 @:bitmap("tmp/ground/10by10/10by10_01_01.png") class BackgroundTile_10by10_01_01 extends BitmapData {}
 @:bitmap("tmp/ground/10by10/10by10_01_02.png") class BackgroundTile_10by10_01_02 extends BitmapData {}
@@ -125,6 +129,17 @@ import math.Rect;
 @:bitmap("tmp/ground/10by20/10by20_03_06.png") class BackgroundTile_10by20_03_06 extends BitmapData {}
 @:bitmap("tmp/ground/10by20/10by20_03_07.png") class BackgroundTile_10by20_03_07 extends BitmapData {}
 @:bitmap("tmp/ground/10by20/10by20_03_08.png") class BackgroundTile_10by20_03_08 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_01.png") class BackgroundTile_item_01 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_02.png") class BackgroundTile_item_02 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_03.png") class BackgroundTile_item_03 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_04.png") class BackgroundTile_item_04 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_05.png") class BackgroundTile_item_05 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_06.png") class BackgroundTile_item_06 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_07.png") class BackgroundTile_item_07 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_08.png") class BackgroundTile_item_08 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_09.png") class BackgroundTile_item_09 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_10.png") class BackgroundTile_item_10 extends BitmapData {}
+@:bitmap("tmp/ground/items/item_11.png") class BackgroundTile_item_11 extends BitmapData {}
 @:bitmap("tmp/ground/5by5/5by5_01.png") class BackgroundTile_5by5_01 extends BitmapData {}
 @:bitmap("tmp/ground/5by5/5by5_02.png") class BackgroundTile_5by5_02 extends BitmapData {}
 @:bitmap("tmp/ground/5by5/5by5_03.png") class BackgroundTile_5by5_03 extends BitmapData {}
@@ -406,6 +421,28 @@ class GroundTilerAssets
 				data = new BackgroundTile_10by20_03_07(0, 0);
 			case "10by20_03_08":
 				data = new BackgroundTile_10by20_03_08(0, 0);
+			case "item_01":
+				data = new BackgroundTile_item_01(0, 0);
+			case "item_02":
+				data = new BackgroundTile_item_02(0, 0);
+			case "item_03":
+				data = new BackgroundTile_item_03(0, 0);
+			case "item_04":
+				data = new BackgroundTile_item_04(0, 0);
+			case "item_05":
+				data = new BackgroundTile_item_05(0, 0);
+			case "item_06":
+				data = new BackgroundTile_item_06(0, 0);
+			case "item_07":
+				data = new BackgroundTile_item_07(0, 0);
+			case "item_08":
+				data = new BackgroundTile_item_08(0, 0);
+			case "item_09":
+				data = new BackgroundTile_item_09(0, 0);
+			case "item_10":
+				data = new BackgroundTile_item_10(0, 0);
+			case "item_11":
+				data = new BackgroundTile_item_11(0, 0);
 			case "5by5_01":
 				data = new BackgroundTile_5by5_01(0, 0);
 			case "5by5_02":
