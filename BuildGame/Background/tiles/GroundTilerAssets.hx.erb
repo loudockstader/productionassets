@@ -1,0 +1,47 @@
+package incubet.builder.world.tiler;
+
+import flash.display.BitmapData;
+
+import math.Rect;
+
+<%
+	class_files = []
+	files.each do |path, list|
+		list.each do |file|
+			class_file = { :file => File.basename(file), :classname => "BackgroundTile_#{File.basename(file.to_s,".png")}" }
+			class_files << class_file
+%>
+@:bitmap("tmp/ground/<%= File.join(path,file.to_s) %>.png") class <%= class_file[:classname] %> extends BitmapData {}<%
+		end
+	end
+%>
+
+class GroundTilerAssets
+{
+
+	var _hash:Hash<BitmapData>;
+
+	public function new()
+	{
+		_hash = new Hash<BitmapData>();
+	}
+
+	public function generate(image:String):BitmapData
+	{
+		if (_hash.exists(image))
+			return _hash.get(image);
+		
+		var data:BitmapData = null;
+		switch (image)
+		{
+			<% class_files.each do |class_file| %>
+			case "<%= class_file[:file] %>":
+				data = new <%= class_file[:classname] %>(0, 0);<%
+			end %>
+		}
+
+		_hash.set(image, data);
+		return data;
+	}
+
+}
