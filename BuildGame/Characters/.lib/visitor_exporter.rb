@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'erb'
 
-CARDINAL_DIRECTIONS = ["south-east", "south", "south-west","west","north-west", "north", "north-east", "east"]
+CARDINAL_DIRECTIONS = ["south-east","south","south-west","west","north-west","north","north-east","east"]
 
 class String
 
@@ -25,9 +25,10 @@ end
 
 class Visitor
 
-	def initialize id
+	def initialize id, offsets
 		@id = id
 		@states = []
+		@offsets = offsets
 	end
 	
 	def add_state state
@@ -53,6 +54,33 @@ class Visitor
 				end
 			end	
 		end
+		begin
+			require 'RMagick'
+			require 'mini_magick'
+			minX = 1000000
+			maxX = 0
+			minY = 1000000
+			maxY = 0
+			Dir.glob(File.join(target,"**","*.png")).each do |file|
+				image = Magick::Image.read(file)
+				image[0].each_pixel do |p,c,r|
+					if p.opacity < 0xFFFF
+						maxX = [maxX,c].max
+						minX = [minX,c].min
+						maxY = [maxY,r].max
+						minY = [minY,r].min
+					end
+				end
+			end
+			Dir.glob(File.join(target,"**","*.png")).each do |file|
+				puts "crop: #{file} to #{maxX-minX}x#{maxY-minY}+#{minX}+#{minY}"
+				MiniMagick::Image.new(file).crop("#{maxX-minX}x#{maxY-minY}+#{minX}+#{minY}")
+			end
+		rescue Exception => e
+			puts "Rmagick failed to load. Image processing skipped."
+			puts e, e.backtrace
+		end
+
 		classfile = File.join(package.gsub(".","/"),"#{@id.capitalize}Assets.hx")
 		puts "creating assets classfile: #{classfile}"
 		template = File.open(File.join(File.dirname(__FILE__),"VisitorAssets.hx.erb")).read
@@ -77,4 +105,4 @@ class State
 		end
 	end
 
-end 
+end

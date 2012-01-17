@@ -16,7 +16,7 @@ import flash.display.BitmapData;
 	end
 %>
 
-class <%= @id.capitalize %>Assets
+class <%= @id.capitalize %>Assets implements VisitorAssetLibrary
 {
 
 	public var id(default, null):String;
@@ -51,8 +51,8 @@ class <%= @id.capitalize %>Assets
 		renderable.sprite = sprites;
 		for (i in 0...renderable.sprite.length)
 		{
-			renderable.offset_x.push(0);
-			renderable.offset_y.push(15);
+			renderable.offset_x.push(<%= @offsets[:x] %>);
+			renderable.offset_y.push(<%= @offsets[:y] %>);
 		}
 		return renderable;
 	}

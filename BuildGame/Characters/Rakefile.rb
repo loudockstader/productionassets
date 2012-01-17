@@ -8,7 +8,7 @@ task :default => :generate
 task :builder_bob do
 	FileUtils.rm_rf File.join(EXPORT,'bob')
 	dir = File.join(File.join( File.dirname(__FILE__),"HostCharacters","Builder Bob copy"))
-	bob = Visitor.new 'bob'
+	bob = Visitor.new 'bob', {:x => 66, :y => 36}
 	idle = State.new 'idle'
 	idle.directions["north"] << Dir.glob(File.join( dir,"bld_host4_walking_back","*.png")).first
 	idle.directions["north-east"] << Dir.glob(File.join( dir,"bld_host4_walking_back_iso","*.png")).first
@@ -35,7 +35,7 @@ end
 task :temporary_pedestrian do
 	FileUtils.rm_rf File.join(EXPORT,'warrior')
 	dir = File.join(File.join( File.dirname(__FILE__),"TemporaryPedestrian","images"))
-	warrior = Visitor.new 'warrior'
+	warrior = Visitor.new 'warrior', {:x => 12, :y => 25}
 	idle = State.new 'idle'
 	images = Dir.glob(File.join(dir,"*.png"))
 	CARDINAL_DIRECTIONS.each do |direction|
