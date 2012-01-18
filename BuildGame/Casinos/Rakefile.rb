@@ -52,6 +52,16 @@ task :DefaultFolders do
 
 end
 
+desc "write out an asset list for the files in asset_export"
+task :PlainList do
+
+	Dir.glob(File.join(SOURCE,"asset_export","*.iaf")).each do |file|
+		basename = File.basename(file,'.iaf').gsub(" ","")
+		puts "#{basename}"
+	end
+
+end
+
 desc "write out an asset manifest for the files in asset_export"
 task :Manifest do
 
