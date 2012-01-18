@@ -23,3 +23,5 @@ Dir.glob(File.join(PRE_SOURCE,"ratpacks","*.png")).each do |file|
 	FileUtils.mkdir_p(File.dirname(target)) unless File.directory? File.dirname(target)
 	FileUtils.cp file, target
 end
+
+
