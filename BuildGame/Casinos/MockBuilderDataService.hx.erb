@@ -1,0 +1,213 @@
+// Generated from MockBuilderDataService.hx.erb in the ProductionAssets repo
+package incubet.myvegas.services.games.mocks;
+
+import haxe.Timer;
+
+import incubet.myvegas.dtos.builder.AttributesListDTO;
+import incubet.myvegas.dtos.builder.AttributesDTO;
+import incubet.myvegas.dtos.builder.AvailableBuildingsDTO;
+import incubet.myvegas.dtos.builder.BuilderInitDTO;
+import incubet.myvegas.dtos.builder.BuildingCollectedDTO;
+import incubet.myvegas.dtos.builder.BuildingPlaceDTO;
+import incubet.myvegas.dtos.builder.StateDTO;
+import incubet.myvegas.dtos.builder.StatesDTO;
+import incubet.myvegas.dtos.builder.StaticBuildingInfoDTO;
+import incubet.myvegas.services.games.interfaces.IBuilderDataService;
+
+using Lambda;
+
+class MockBuilderDataService implements IBuilderDataService
+{
+	static var LOT_ID:Int = 0;
+
+	var types:Array<AttributesDTO>;
+	var states:Array<StateDTO>;
+	var buildables:Array<BuildingDTO>;
+
+	var lots:Array<LotDTO>;
+	var placed:Array<PlacedBuildingDTO>;
+	var collections:Hash<Float>;
+
+	public function new() 
+	{
+		states = new Array<StateDTO>();
+		types = new Array<AttributesDTO>();
+		buildables = new Array<BuildingDTO>();
+		lots = new Array<LotDTO>();
+		placed = new Array<PlacedBuildingDTO>();
+		collections = new Hash<Float>();
+
+		states.push({Id:"default", Name:"Default", NextStateId:"default", Attraction:80, Duration:9999999, GenerationAmount:50, GenerationInterval:10});
+
+		<% assets.each do |asset| %>
+		types.push({Id:"<%= asset[:basename] %>", Name:"name_<%= asset[:basename] %>", Zoning:"<%= asset[:zone] %>", Asset:"<%= asset[:basename] %>", StateIds:["default"]});<% end %>
+		
+		<% assets.each do |asset| %>
+		buildables.push({Id:"<%= asset[:basename] %>_instance", AttributesId:"<%= asset[:basename] %>", Name:""});<% end %>
+	}
+	
+	public function getGameState(func:BuilderInitDTO->Void):Void
+	{
+		delay(func, {Buildable:buildables, Strip:{Lots:lots}});
+	}
+	
+	public function fetchWorld(func:BuilderInitDTO->Void):Void
+	{
+		delay(func, {Buildable:buildables, Strip:{Lots:lots}});
+	}
+	
+	public function fetchBuildingAttributes(func:AttributesListDTO->Void):Void
+	{
+		throw "fetchBuildingAttributes shouldn't be implemented in the client";
+//		delay(func, {Attributes:attributes});
+	}
+
+	public function fetchBuildingStates(func:StatesDTO->Void):Void
+	{
+		throw "fetchBuildingStates shouldn't be implemented in the client";
+//		delay(func, {States:states});
+	}
+
+	public function placeBuilding(buildingId:String, lotId:String, x:Int, y:Int, func:BuildingPlaceDTO->Void):Void
+	{
+		var buildable = getBuildable(buildingId);
+		var type = getType(buildable.AttributesId);
+		var lot = getLot(lotId);
+		var typeID = type.Id;
+		var typeName:String = type.Name;
+		var position = {X:x, Y:y};
+		var startBuild = getTime();
+		var lastCollected = getTime(30 * 1000);
+		var stateID = type.StateIds[0];
+		var placedBuilding = {Id:buildingId, AttributesId:typeID, Name:typeName, LastCollected:lastCollected, StartBuild:startBuild, StateId:stateID, Position:position};
+		
+		buildables.remove(buildable);
+		collections.set(buildingId, Date.now().getTime());
+		placed.push(placedBuilding);
+		lot.Buildings.push(placedBuilding);
+		
+		delay(func, {LotId:lotId, PlacedBuilding:placedBuilding});
+	}
+	
+	public function placeBuildingInNewLot(buildingId:String, buildingX:Int, buildingY:Int, lotWidth:Int, lotHeight:Int, lotX:Int, lotY:Int, func:BuildingPlaceDTO->Void):Void
+	{
+		var buildable = getBuildable(buildingId);
+		var type = getType(buildable.AttributesId);
+		var lotID = "lot" + Std.string(++LOT_ID);
+		var lotType = type.Zoning;
+		var typeID = type.Id;
+		var typeName:String = type.Name;
+		var position = {X:buildingX, Y:buildingY};
+		var startBuild = getTime();
+		var lastCollected = getTime(30 * 1000);
+		var stateID = type.StateIds[0];
+		var placedBuilding = {Id:buildingId, AttributesId:typeID, Name:typeName, LastCollected:lastCollected, StartBuild:startBuild, StateId:stateID, Position:position};
+		
+		buildables.remove(buildable);
+		collections.set(buildingId, Date.now().getTime());
+		placed.push(placedBuilding);
+		lots.push({Buildings:[placedBuilding], Id:lotID, Zoning:lotType, Height:lotHeight, Width:lotWidth, PositionX:lotX, PositionY:lotY});
+		delay(func, {LotId:lotID, PlacedBuilding:placedBuilding});
+	}
+
+	public function collectBuilding(instanceID:String, func:BuildingCollectedDTO->Void):Void
+	{
+		var time = Date.now().getTime();
+		var building = getBuilding(instanceID);
+		var collected = collections.get(instanceID);
+
+		collections.set(instanceID, time);
+
+		var deltaTime = Std.int((time - collected) / 1000);
+		if (deltaTime < 0)
+			deltaTime = 0;
+		
+		// FIXME this isn't hooked into the current state of the building...
+		var gold = 50 * Std.int(deltaTime / 10);
+
+		delay(func, {Collected:[{Key:"Credits", Value:gold}]});
+	}
+	
+	public function fetchAvailableBuildings(func:AvailableBuildingsDTO->Void):Void
+	{
+		delay(func, {Buildable:buildables});
+	}
+	
+	public function fetchStaticBuildingInfo(func:StaticBuildingInfoDTO->Void):Void
+	{
+		delay(func, {Attributes:types, States:states});
+	}
+
+	inline function getLot(lotID:String):LotDTO
+	{
+		var match = null;
+		for (lot in lots)
+		{
+			if (lot.Id == lotID)
+			{
+				match = lot;
+				break;
+			}
+		}
+
+		return match;
+	}
+
+	inline function getBuilding(instanceID:String):PlacedBuildingDTO
+	{
+		var match = null;
+		for (building in placed)
+		{
+			if (building.Id == instanceID)
+			{
+				match = building;
+				break;
+			}
+		}
+
+		return match;
+	}
+
+	inline function getBuildable(instanceID:String):BuildingDTO
+	{
+		var match = null;
+		for (buildable in buildables)
+		{
+			if (buildable.Id == instanceID)
+			{
+				match = buildable;
+				break;
+			}
+		}
+
+		return match;
+	}
+
+	inline function getType(typeID:String):AttributesDTO
+	{
+		var match = null;
+		for (type in types)
+		{
+			if (type.Id == typeID)
+			{
+				match = type;
+				break;
+			}
+		}
+
+		return match;
+	}
+
+	inline function getTime(?delta:Int = 0):String
+	{
+		var value = Date.now().getTime() + delta;
+		return "/Date(" + Std.string(value) + ")/";
+	}
+
+	function delay<T>(fn:T->Void, data:T)
+	{
+		var delayed = function() { fn(data); };
+		Timer.delay(delayed, 100);
+	}
+
+}
