@@ -40,7 +40,7 @@ class MockBuilderDataService implements IBuilderDataService
 		states.push({Id:"default", Name:"Default", NextStateId:"default", Attraction:80, Duration:9999999, GenerationAmount:50, GenerationInterval:10});
 
 		<% assets.each do |asset| %>
-		types.push({Id:"<%= asset[:basename] %>", Name:"name_<%= asset[:basename] %>", Zoning:"<%= asset[:zone] %>", Asset:"<%= asset[:basename] %>", StateIds:["default"]});<% end %>
+		types.push({Id:"<%= asset[:basename] %>", Name:"<%= asset[:basename] %>", Zoning:"<%= asset[:zone] %>", Asset:"<%= asset[:basename] %>", StateIds:["default"]});<% end %>
 		
 		<% assets.each do |asset| %>
 		buildables.push({Id:"<%= asset[:basename] %>_instance", AttributesId:"<%= asset[:basename] %>", Name:""});<% end %>
