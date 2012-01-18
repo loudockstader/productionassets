@@ -5,6 +5,7 @@ SOURCE = File.dirname(__FILE__)
 
 task :default => :CreateMockDataService
 
+desc "create a new MockDataService with the latest assets defined"
 task :CreateMockDataService do
 	
 	assets = Array.new
@@ -51,12 +52,55 @@ task :DefaultFolders do
 
 end
 
+desc "write out an asset list for the files in asset_export"
+task :PlainList do
+
+	Dir.glob(File.join(SOURCE,"asset_export","*.iaf")).each do |file|
+		basename = File.basename(file,'.iaf').gsub(" ","")
+		puts "#{basename}"
+	end
+
+end
+
 desc "write out an asset manifest for the files in asset_export"
 task :Manifest do
 
 	Dir.glob(File.join(SOURCE,"asset_export","*.iaf")).each do |file|
 		basename = File.basename(file,'.iaf').gsub(" ","")
 		puts "#{basename}|#{basename}.iaf"
+	end
+
+end
+
+desc "list assets"
+task :ListAssets do
+
+	assets = Dir.glob(File.join(SOURCE, "asset_source", "*"))
+	assets.each do |buildingDir|
+		
+		building = File.basename(buildingDir)
+		puts "#{building}"
+
+		states = Array.new
+		Dir.glob(File.join(buildingDir,"*")).each do |stateDir|
+			if File.directory?(stateDir)
+
+				state = File.basename(stateDir)
+				files = Dir.glob(File.join(stateDir,"*"))
+				tiles = files.select { |f| f.include? "tile" }
+				shadows = files.select { |f| f.include? "shadow" }
+				main = files - tiles - shadows
+
+				states << "  -  #{state} #{main.length} #{tiles.length} #{shadows.length}"
+			end
+		end
+
+		if states.length == 0
+		 	puts "ERROR - NO STATE FOUND"
+		else
+			puts states * "\n"
+		end
+
 	end
 
 end
